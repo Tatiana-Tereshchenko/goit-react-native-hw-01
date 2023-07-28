@@ -5,6 +5,8 @@ import {
     View,
     TextInput,
     TouchableOpacity,
+    TouchableWithoutFeedback,
+    Keyboard,
     Text,
     Dimensions,
     Platform,
@@ -18,6 +20,19 @@ const initialState = {
 };
 
 const LoginScreen = ({ navigation }) => {
+    const [state, setState] = useState(initialState);
+    const [hidePassword, setHidePassword] = useState(true);
+    const [isShowKeyboard, setIsShowKeyboard] = useState(false);
+    const toggleHidePassword = () => setHidePassword(!hidePassword);
+
+    const handleEmailChange = (value) =>
+        setState((prevState) => ({ ...prevState, email: value }));
+    const handlePasswordChange = (value) =>
+        setState((prevState) => ({ ...prevState, password: value }));
+
+
+
+
     useEffect(() => {
 
     const onChange = () => {
@@ -29,20 +44,27 @@ const LoginScreen = ({ navigation }) => {
     return () => Dimensions.removeEventListener('change', onChange);
   }, []);
     
-    const [state, setState] = useState(initialState);
     
-    const passShow = () => alert(`Your password is: ${password}`);
+    
+    
 
     const submitForm = () => {
         console.log(state);
         setState(initialState);
     }
 
+
+    const keyBoardHide = () => {
+    setIsKeyboardShow(false);
+    Keyboard.dismiss();
+    };
+    
     return (
+        <TouchableWithoutFeedback onPress={keyBoardHide}>
         <KeyboardAvoidingView style={styles.keyboard} behavior={Platform.OS == "ios" ? "padding" : "height"}>
             <ImageBackground style={styles.imageBg} source={require("../images/photo-BG.jpg")}>
                 <View style={styles.container}>  
-                    <View style={styles.box}>
+                    <View style={{ ...styles.box, paddingTop: isShowKeyboard ? 55:92, paddingBottom: isShowKeyboard ? 50:35}}>
                         
                         <View style={styles.form}>
                             <Text style={styles.boxTitle}>Увійти</Text>
@@ -51,15 +73,17 @@ const LoginScreen = ({ navigation }) => {
                                 <TextInput style={styles.inputForm}
                                     placeholder="Адреса електронної пошти"
                                     inputMode="email" value={state.email}
-                                    onChange={(value) => setState((prevState) => ({ ...prevState, email: value }))} />
+                                    onChangeText={handleEmailChange}
+                                    onFocus={() => setIsShowKeyboard(true)}/>
                                 
                                 <TextInput style={styles.inputForm}
                                     placeholder="Пароль"
-                                    secureTextEntry={true}
+                                    secureTextEntry={hidePassword}
                                     value={state.password}
-                                    onChange={(value) => setState((prevState) => ({ ...prevState, password: value }))} />
+                                    onChangeText={handlePasswordChange}
+                                    onFocus={() => setIsShowKeyboard(true)}/>
                                 
-                                <TouchableOpacity style={styles.passShow} activeOpacity={0.5} onPress={passShow}>
+                                <TouchableOpacity style={styles.passShow} activeOpacity={0.5} onPress={toggleHidePassword}>
                                     <Text style={styles.passShowText}>Показати</Text>
                                 </TouchableOpacity>
                             </View>
@@ -76,10 +100,12 @@ const LoginScreen = ({ navigation }) => {
                 </View >
                 </ImageBackground>
                 
-        </KeyboardAvoidingView>
+            </KeyboardAvoidingView>
+            </TouchableWithoutFeedback>
     )
     
 }
+
 const styles = StyleSheet.create({
         container: {
     flex: 1,

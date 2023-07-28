@@ -8,27 +8,36 @@ import {
     TextInput,
     Keyboard,
     KeyboardAvoidingView,
+    TouchableWithoutFeedback,
     Platform,
     Dimensions,
     Alert,
 } from "react-native";
-import { useNavigation } from '@react-navigation/native';
 import React, { useState , useEffect} from "react";
 
+const initialState = {
+    login: "",
+    email: "",
+    password: "",
+};
 
 
-const Registration = () => {
-    const navigation = useNavigation();
-    const [login, setLogin] = useState('');
-    const [mail, setMail] = useState('');
-    const [password, setPassword] = useState('');
+const Registration = ({ navigation }) => {
+    const [state, setState] = useState(initialState);
+    const [hidePassword, setHidePassword] = useState(true);
+    const [isShowKeyboard, setIsShowKeyboard] = useState(false);
+    const toggleHidePassword = () => setHidePassword(!hidePassword);
+
+    const handleLoginChange = (value) =>
+        setState((prevState) => ({ ...prevState, login: value }));
+    const handleEmailChange = (value) =>
+        setState((prevState) => ({ ...prevState, email: value }));
+    const handlePasswordChange = (value) =>
+        setState((prevState) => ({ ...prevState, password: value }));
+
+
+    const [setDimensions] = useState(Dimensions.get("window").width - 20 * 2);
     
-    const handleLogin = (text) => { setLogin(text) };
-    const handleMail = (text) => { setMail(text) };
-    const handlePassword = (text) => { setPassword(text) };
-    const passShow = () => alert(`Your password is: ${password}`);
-
-    const [ setDimensions] = useState(Dimensions.get("window").width - 20 * 2);
         useEffect(() => {
 
     const onChange = () => {
@@ -40,21 +49,25 @@ const Registration = () => {
     return () => Dimensions.removeEventListener('change', onChange);
     }, []);
     
-    const handleSubmit = () => {
+     const handleSubmit = () => {
     Keyboard.dismiss();
     setIsShowKeyboard(false);
-    Alert.alert("Sign Up", `${login}, ${email}, ${password}`);
-    setLogin('');
-    setMail('');
-    setPassword('');
-    };
+    console.log("Form data:", state);
+    setState(initialState);
+  };
+
+    const keyBoardHide = () => {
+    setIsShowKeyboard(false);
+    Keyboard.dismiss();
+  };
 
     
     return (
+        <TouchableWithoutFeedback onPress={keyBoardHide}>
         <KeyboardAvoidingView style={styles.keyboard} behavior={Platform.OS == "ios" ? "padding" : "height"}>
             <ImageBackground style={styles.imageBg} source={require("../images/photo-BG.jpg")}>
                 <View style={styles.container}>  
-                    <View  style={styles.box}>
+                        <View style={{ ...styles.box, paddingTop: isShowKeyboard ? 55:92, paddingBottom: isShowKeyboard ? 50:35}}>
                     <View style={styles.addButton}> 
                             <TouchableOpacity style={styles.addBtn}>
                                 <Image style={styles.icon} source={require("../images/add.png")} />
@@ -62,15 +75,34 @@ const Registration = () => {
                     </View>
                         <View style={styles.form}>
                             <Text style={styles.boxTitle}>Реєстрація</Text>
-                            <View >
-                                <TextInput style={styles.inputForm} placeholder="Логін" inputMode="text" value={login} onChangeText={handleLogin} />
-                                <TextInput style={styles.inputForm} placeholder="Адреса електронної пошти" inputMode="email" value={mail} onChangeText={handleMail} />
-                                <TextInput style={styles.inputForm} placeholder="Пароль" secureTextEntry={true} value={password} onChangeText={handlePassword} />
-                                <TouchableOpacity style={styles.passShow} activeOpacity={0.5} onPress={passShow}>
+                                <View >
+                                    
+                                    <TextInput style={styles.inputForm}
+                                        placeholder="Логін"
+                                        inputMode="text"
+                                        value={state.login}
+                                        onFocus={() => setIsShowKeyboard(true)}
+                                        onChangeText={handleLoginChange} />
+                                    
+                                    <TextInput style={styles.inputForm}
+                                        placeholder="Адреса електронної пошти"
+                                        inputMode="email"
+                                        value={state.email}
+                                        onFocus={() => setIsShowKeyboard(true)}
+                                        onChangeText={handleEmailChange} />
+                                    
+                                    <TextInput style={styles.inputForm}
+                                        placeholder="Пароль"
+                                        secureTextEntry={hidePassword}
+                                        value={state.password}
+                                        onFocus={() => setIsShowKeyboard(true)}
+                                        onChangeText={handlePasswordChange} />
+                                    
+                                <TouchableOpacity style={styles.passShow} activeOpacity={0.5} onPress={toggleHidePassword}>
                                     <Text style={styles.passShowText}>Показати</Text>
                                 </TouchableOpacity>
                             </View>
-                            <TouchableOpacity style={styles.registerButton} activeOpacity={0.5} onPress={handleSubmit}>
+                                <TouchableOpacity style={{ ...styles.registerButton, marginTop:isShowKeyboard ? 20:43,  }} activeOpacity={0.5} onPress={handleSubmit}>
                                 <Text style={styles.registerButtonText}>Зареєстуватися</Text>
                         </TouchableOpacity>
                         </View>
@@ -82,7 +114,8 @@ const Registration = () => {
                 </View >
                 </ImageBackground>
                 
-        </KeyboardAvoidingView>
+            </KeyboardAvoidingView>
+            </TouchableWithoutFeedback>
     )
 };
 
