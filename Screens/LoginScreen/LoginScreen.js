@@ -51,6 +51,7 @@ const LoginScreen = ({ navigation }) => {
     const submitForm = () => {
         console.log(state);
         setState(initialState);
+        navigation.navigate("Home");
     }
 
 

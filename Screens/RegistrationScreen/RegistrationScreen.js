@@ -11,7 +11,6 @@ import {
     TouchableWithoutFeedback,
     Platform,
     Dimensions,
-    Alert,
 } from "react-native";
 import React, { useState , useEffect} from "react";
 
