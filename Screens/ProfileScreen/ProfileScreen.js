@@ -7,8 +7,10 @@ import {
     Image,
     TouchableOpacity,
 } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 
 const ProfileScreen = () => {
+    const navigation = useNavigation(); 
     return (
         <ImageBackground style={styles.imageBg} source={require("../images/photo-BG.jpg")}>
             <View style={styles.container}>

@@ -35,7 +35,7 @@ const Registration = ({ navigation }) => {
         setState((prevState) => ({ ...prevState, password: value }));
 
 
-    const [setDimensions] = useState(Dimensions.get("window").width - 20 * 2);
+   const [ setDimensions] = useState(Dimensions.get("window").width - 20 * 2);
     
         useEffect(() => {
 
